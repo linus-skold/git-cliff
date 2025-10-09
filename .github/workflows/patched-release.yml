@@ -77,17 +77,6 @@ jobs:
             echo "RELEASE_VERSION=${BRANCH_NAME}-${COMMIT_SHA}" >> $GITHUB_ENV
           fi
 
-      - name: Install dependencies (Linux)
-        if: matrix.build.OS == 'ubuntu-22.04'
-        run: |
-          if [[ "${{ matrix.build.NAME }}" = *"-musl" ]]; then
-            sudo apt-get update
-            sudo apt-get install -y musl-tools
-          fi
-          if [[ "${{ matrix.build.TARGET }}" == "aarch64-unknown-linux-gnu" ]]; then
-            sudo apt-get install -y gcc-aarch64-linux-gnu
-          fi
-
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -96,7 +85,16 @@ jobs:
           override: true
           default: true
 
-      - name: Build binary
+      - name: Build (Linux/macOS)
+        if: matrix.build.OS != 'windows-2022'
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --release --locked --target ${{ matrix.build.TARGET }}
+
+      - name: Build (Windows)
+        if: matrix.build.OS == 'windows-2022'
         uses: actions-rs/cargo@v1
         with:
           command: build
@@ -126,19 +124,6 @@ jobs:
             tar -czvf git-cliff-${{ env.RELEASE_VERSION }}-${{ matrix.build.TARGET }}.tar.gz \
               git-cliff-${{ env.RELEASE_VERSION }}/
           fi
-
-      - name: Create GitHub Release
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
-        with:
-          files: git-cliff-${{ env.RELEASE_VERSION }}-${{ matrix.build.TARGET }}.*
-          tag_name: ${{ env.RELEASE_VERSION }}
-          name: "Patched Release ${{ env.RELEASE_VERSION }}"
-          draft: false
-          prerelease: ${{ contains(env.RELEASE_VERSION, '-') }}
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release (Manual or Branch)
         if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/'))
