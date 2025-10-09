@@ -92,14 +92,14 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --release --locked --target ${{ matrix.build.TARGET }}
+          args: --release --target ${{ matrix.build.TARGET }}
 
       - name: Build (Windows)
         if: matrix.build.OS == 'windows-2022'
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --locked --target ${{ matrix.build.TARGET }}
+          args: --release --target ${{ matrix.build.TARGET }}
 
       - name: Prepare release files
         shell: bash
