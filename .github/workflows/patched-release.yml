@@ -136,6 +136,7 @@ jobs:
           draft: false
           prerelease: true
           generate_release_notes: true
+          target_commitish: ${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
