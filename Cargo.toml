@@ -60,3 +60,7 @@ redundant_closure_for_method_calls = "allow"
 map_unwrap_or = "allow"
 struct_excessive_bools = "allow"
 unnecessary_wraps = "allow"
+
+
+[patch.crates-io]
+tera = { git = "https://github.com/linus-skold/tera", branch = "feat/regex-utilities" }
