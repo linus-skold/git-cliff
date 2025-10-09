@@ -105,6 +105,3 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [lints]
 workspace = true
-
-[patch.crates-io]
-tera = { git = "https://github.com/linus-skold/tera", branch = "feat/regex-utilities" }
